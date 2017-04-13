@@ -1,0 +1,65 @@
+{% extends 'blog_admin/base.html' %}
+
+{% block css %}
+    <style>
+        th, td{
+            text-align: center;
+        }
+        .width_200px{
+            width: 200px;
+        }
+        .width_200px input{
+            text-align: center;
+        }
+        #button button{
+            float: right;
+            margin: 10px;
+        }
+        .error-p{
+            padding-top: 5px;
+            color: red;
+            text-align: left;
+            padding-left: 5px;
+            float: left;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <h1 class="page-header">添加标签</h1>
+
+        <div id="form" class="col-sm-6">
+            <form class="form-horizontal" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="inputTagname" class="col-sm-3 control-label">标签名称</label>
+                    <div class="col-sm-4">
+                        {{ form_obj.tag_name }}
+                    </div>
+                    {% if form_obj.errors.tag_name %}
+                         <p class="error-p">{{ form_obj.errors.tag_name.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-5">
+                        <button type="submit" class="btn btn-success"> 添加 </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+
+
+
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        (function () {
+            $("#menus a[href='/blog_admin/tags/']").parent('li').addClass('active');
+        })()
+    </script>
+{% endblock %}

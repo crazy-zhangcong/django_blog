@@ -16,7 +16,19 @@ Including another URLconf
 from django.conf.urls import url
 
 from blog_admin import views
+
+from blog_admin.views_dir import authentication
+
 urlpatterns = [
+    url(r'^auth_login/', authentication.auth_login),
+    url(r'^auth_logout/', authentication.auth_logout),
+    url(r'^article/', views.article),
+    url(r'^column/', views.column),
+
+    url(r'^tags/add/', views.tags_add),
+    url(r'^tags/', views.tags),
+
+
     url(r'', views.index),
 
 ]

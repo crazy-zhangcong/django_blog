@@ -1,0 +1,167 @@
+{% extends 'blog_admin/base.html' %}
+
+{% block css %}
+    <style>
+        th, td{
+            text-align: center;
+        }
+        .width_200px{
+            width: 200px;
+        }
+        .width_200px input{
+            text-align: center;
+        }
+        #button button{
+            float: right;
+            margin: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <h1 class="page-header">标签管理</h1>
+        <div id="button">
+            <a href="add/"><button type="button" class="btn btn-primary"> 添加 </button></a>
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>标签名</th>
+                    <th>创建时间</th>
+                    <th>文章数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in tags_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="width_200px" tag_id="{{ row.id }}" v="{{ row.tag_name }}">{{ row.tag_name }}</td>
+                        <td>{{ row.create_time|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ row.count }}</td>
+                        <td>
+                            <a href="javascript:void(0)" onclick="click_edit(this, '{{ row.id }}');"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |
+                            <a href="javascript:void(0)" onclick="click_delete(this, '{{ row.id }}');"><i class="fa fa-times" aria-hidden="true"></i></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block modal %}
+{#    <div class="modal fade" tabindex="-1" role="dialog">#}
+    <div class="modal fade" id="delete_tag_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">删除标签</h4>
+                </div>
+                <div class="modal-body">
+                    <p>确认删除该标签吗?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" name="delete" onclick="delete_tag();">确认删除</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}
+
+{% block js %}
+    <script>
+        
+        function click_edit(this_obj, tag_id) {
+            {# 点击标签后面的编辑图标 #}
+
+            var input_button_obj = document.createElement('input');
+            input_button_obj.type = 'button';
+            input_button_obj.value = "保存";
+            input_button_obj.className = 'btn btn-success';
+            input_button_obj.setAttribute("onclick", "click_save_button('" + tag_id +"');");
+
+            var td_tag = $(this_obj).parent('td');
+            td_tag.empty();
+            td_tag.append(input_button_obj);
+            console.log();
+
+            $(".table tbody").find('td').each(function () {
+                if($(this).attr('tag_id') == tag_id){
+                    var text = $(this).text();
+                    var input_text_obj = document.createElement('input');
+
+                    input_text_obj.type = 'text';
+                    input_text_obj.value = text;
+                    input_text_obj.className = 'form-control';
+                    $(this).empty();
+                    $(this).append(input_text_obj);
+
+                    $(this).find('input').keypress(function (e) {
+                        if(e.which == 13) {
+                           click_save_button(tag_id);
+                        }
+                    })
+                }
+            });
+        }
+    
+        function click_save_button(tag_id) {
+            {# 当编辑标签后面的编辑图标被点击后,该位置会出现保存的按钮,该按钮被点击,则执行该函数 #}
+
+            $(".table tbody").find('td').each(function () {
+                if($(this).attr('tag_id') == tag_id){
+                    var text = $(this).attr('v');
+                    var new_text = $(this).find('input').val();
+                    if(text != new_text){
+                        $.ajax({
+                            url: '/blog_admin/tags/',
+                            type: 'POST',
+                            data: {
+                                v: new_text,
+                                tag_id: tag_id,
+                                type_: 'PUT'
+                            },
+                            success: function (response) {
+                                if (response.status) {
+                                    console.log('修改成功!')
+                                }
+                            }
+                        })
+                    }
+                    location.reload();
+                }
+            });
+        }
+
+        function click_delete(this_obj, tag_id) {
+            {# 点击标签后面的删除图标 #}
+            $('#delete_tag_modal').modal('show');
+            $('#delete_tag_modal button[name="delete"]').attr({tag_id: tag_id})
+        }
+
+        function delete_tag() {
+            var tag_id = $('#delete_tag_modal button[name="delete"]').attr('tag_id');
+            $.ajax({
+                url: '/blog_admin/tags/',
+                type: 'POST',
+                data: {
+                    tag_id: tag_id,
+                    type_: 'DELETE'
+                },
+                success: function (response) {
+                    if (response.status) {
+                        location.reload();
+                    }
+                }
+            })
+        }
+
+
+    </script>
+
+{% endblock %}
