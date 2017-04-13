@@ -75,6 +75,7 @@ class Articles(models.Model):
 
 
 class Columns(models.Model):
+
     """栏目表"""
     name = models.CharField(verbose_name="栏目名称", max_length=64)
     url = models.CharField(verbose_name="url", max_length=64, null=True, blank=True)
