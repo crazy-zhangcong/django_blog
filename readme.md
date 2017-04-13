@@ -61,8 +61,11 @@ django_blog/            # 程序主目录
 │   └── wsgi.py
 ├── manage.py
 ├── readme.md
-└── templates
-    └── blog_admin              ### 后台 html 模板
-    └── blog_web                ### 前台 html 模板
-
+├── templates
+│   ├── blog_admin              ### 后台 html 模板
+│   └── blog_web                ### 前台 html 模板
+└── static                  ## 静态文件存放目录
+    ├── css
+    ├── font
+    └── js
 ```
